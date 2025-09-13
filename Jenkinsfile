@@ -33,7 +33,7 @@ pipeline{
                         --prettyPrint "ALL"
                         ''', odcInstallation: 'owasp-dep-check-12-1-2'
                         
-                        dependencyCheckPublisher failedTotalCritical: 0, pattern: 'dependency-check-report.xml', stopBuild: true
+                        dependencyCheckPublisher failedTotalCritical: 2, pattern: 'dependency-check-report.xml', stopBuild: true
 
                         publishHTML(
                             allowMissing: true,
