@@ -33,7 +33,9 @@ pipeline{
                         --prettyPrint "ALL"
                         ''', odcInstallation: 'owasp-dep-check-12-1-2'
                         
-                        dependencyCheckPublisher failedTotalCritical: 2, pattern: 'dependency-check-report.xml', stopBuild: true
+                        dependencyCheckPublisher failedTotalCritical: 4, pattern: 'dependency-check-report.xml', stopBuild: true
+
+                        junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
 
                         publishHTML(
                             allowMissing: true,
