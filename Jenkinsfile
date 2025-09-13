@@ -5,6 +5,10 @@ pipeline{
         nodejs 'node-24-6-0'
         // So that jenkins uses the npm installed via the plugin
     }
+
+    environment {
+        MONGO_URI = "mongodb+srv://octopi.ynkkqtw.mongodb.net/?retryWrites=true&w=majority&appName=octopi"
+    }
     
     stages{
         stage('Install Dependencies'){
@@ -33,11 +37,15 @@ pipeline{
                         --prettyPrint "ALL"
                         ''', odcInstallation: 'owasp-dep-check-12-1-2'
                         
-                        dependencyCheckPublisher failedTotalCritical: 4, pattern: 'dependency-check-report.xml', stopBuild: true
+                        dependencyCheckPublisher(
+                                    failedTotalCritical: 1, 
+                                    pattern: 'dependency-check-report.xml',
+                                    stopBuild: true
+                                )
 
                         junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
 
-                        publishHTML(
+                        publishHTML([
                             allowMissing: true,
                             alwaysLinkToLastBuild: true,
                             keepAll: true,
@@ -46,9 +54,22 @@ pipeline{
                             reportName: 'Dependency Check HTML',
                             reportTitles: '',
                             useWrapperFileDirectly: true
-                        )
+                        ])
                     }   
                 }
+            }
+        }
+
+        stage('Unit Testing'){
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'mongo-creds', 
+                    passwordVariable: 'MONGO_PASSWORD', 
+                    usernameVariable: 'MONGO_USERNAME'
+                )]) {
+                    sh 'npm run test'
+                }
+                junit allowEmptyResults: true, testResults: 'test-results.xml'
             }
         }
     }
