@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const app = express();
 const cors = require("cors");
 const serverless = require("serverless-http");
-require("dotenv").config();
+// require("dotenv").config();
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "/")));
