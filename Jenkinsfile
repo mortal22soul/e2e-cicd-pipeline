@@ -2,7 +2,8 @@ pipeline{
     agent any
 
     tools {
-        nodejs 'node-24-6-0'  // So that jenkins recognises the npm installtion via the plugin
+        nodejs 'node-24-6-0'
+        // So that jenkins uses the npm installed via the plugin
     }
     
     stages{
@@ -31,7 +32,20 @@ pipeline{
                         --out ./
                         --prettyPrint "ALL"
                         ''', odcInstallation: 'owasp-dep-check-12-1-2'
-                    }
+                        
+                        dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
+
+                        publishHTML(
+                            allowMissing: true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: '.',
+                            reportFiles: 'dependency-check-jenkins.html',
+                            reportName: 'Dependency Check HTML',
+                            reportTitles: '',
+                            useWrapperFileDirectly: true
+                        )
+                    }   
                 }
             }
         }
