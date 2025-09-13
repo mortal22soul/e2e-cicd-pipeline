@@ -7,7 +7,7 @@ pipeline{
     }
 
     environment {
-        MONGO_URI = "mongodb+srv://octopi.ynkkqtw.mongodb.net/?retryWrites=true&w=majority&appName=octopi"
+        MONGO_URI = "mongodb+srv://octopi.ynkkqtw.mongodb.net/planets"
     }
     
     stages{
