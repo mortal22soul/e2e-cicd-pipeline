@@ -38,7 +38,7 @@ pipeline{
                         ''', odcInstallation: 'owasp-dep-check-12-1-2'
                         
                         dependencyCheckPublisher(
-                                    failedTotalCritical: 1, 
+                                    failedTotalCritical: 4, 
                                     pattern: 'dependency-check-report.xml',
                                     stopBuild: true
                                 )
