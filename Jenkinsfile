@@ -28,7 +28,7 @@ pipeline{
                         dependencyCheck additionalArguments: '''
                         --scan ./
                         --format "ALL"
-                        --out owasp-reports
+                        --out ./
                         --prettyPrint "ALL"
                         ''', odcInstallation: 'owasp-dep-check-12-1-2'
                     }
