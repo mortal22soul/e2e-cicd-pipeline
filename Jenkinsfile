@@ -8,6 +8,7 @@ pipeline{
 
     environment {
         MONGO_URI = "mongodb+srv://octopi.ynkkqtw.mongodb.net/planets"
+        PORT=9000
     }
     
     stages{
