@@ -1,0 +1,83 @@
+[
+  {
+    "_id": "64de122465ba6ca132e2d041",
+    "id": 0,
+    "name": "Mercury",
+    "image": "https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/mercury.png",
+    "velocity": "47.87",
+    "distance": "57.91",
+    "description": "Mercury is the closest planet to the Sun. It's a small, rocky planet with extreme temperatures, ranging from extremely hot to freezing cold."
+  },
+  {
+    "_id": "64de122465ba6ca132e2d042",
+    "id": 1,
+    "name": "Venus",
+    "image": "https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/venus.png",
+    "velocity": "35.02",
+    "distance": "108.2",
+    "description": "Venus is similar in size and composition to Earth but has a thick, toxic atmosphere that traps heat, creating a runaway greenhouse effect."
+  },
+  {
+    "_id": "64de122465ba6ca132e2d043",
+    "id": 2,
+    "name": "Earth",
+    "image": "https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/earth.png",
+    "velocity": "29",
+    "distance": "149",
+    "description": "Earth is the third planet from the Sun and is the largest of the terrestrial planets. The Earth is the only planet in our solar system not to be named after a Greek or Roman deity. The Earth was formed approximately 4.54 billion years ago and is the only known planet to support life. Earth has one Moon, the largest moon of any rocky planet in the Solar System."
+  },
+  {
+    "_id": "64de122465ba6ca132e2d044",
+    "id": 3,
+    "name": "Mars",
+    "image": "https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/mars.png",
+    "velocity": "24.07",
+    "distance": "227.9",
+    "description": "Mars is the fourth planet from the Sun, known for its reddish appearance due to iron oxide on its surface. It has the tallest volcano in the solar system, Olympus Mons."
+  },
+  {
+    "_id": "64de122465ba6ca132e2d045",
+    "id": 4,
+    "name": "Jupiter",
+    "image": "https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/jupiter.png",
+    "velocity": "13.07",
+    "distance": "778.5",
+    "description": "Jupiter is the largest planet in our solar system, a gas giant with a massive storm known as the Great Red Spot. It has over 79 moons."
+  },
+  {
+    "_id": "64de122465ba6ca132e2d046",
+    "id": 5,
+    "name": "Saturn",
+    "image": "https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/saturn.png",
+    "velocity": "9.69",
+    "distance": "1.43",
+    "description": "Saturn is known for its stunning ring system. It is a gas giant with a composition similar to Jupiter and has more than 80 moons."
+  },
+  {
+    "_id": "64de122465ba6ca132e2d047",
+    "id": 6,
+    "name": "Uranus",
+    "image": "https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/uranus.png",
+    "velocity": "6.81",
+    "distance": "2.87",
+    "description": "Uranus is an ice giant with a blue-green color due to methane in its atmosphere. It rotates on its side, unlike most other planets."
+  },
+  {
+    "_id": "64de122465ba6ca132e2d048",
+    "id": 7,
+    "name": "Neptune",
+    "image": "https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/neptune.png",
+    "velocity": "5.43",
+    "distance": "4.5",
+    "description": "Neptune is the farthest planet from the Sun, known for its deep blue color and strong winds. It's another ice giant with a similar composition to Uranus."
+  },
+  {
+    "_id": "64de122465ba6ca132e2d049",
+    "id": 8,
+    "name": "Pluto",
+    "image": "https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/pluto.png",
+    "velocity": "4.74",
+    "distance": "5.9",
+    "description": "Pluto is a dwarf planet that was once classified as the ninth planet. It has a highly elliptical orbit and is primarily composed of ice and rock."
+  }
+]
