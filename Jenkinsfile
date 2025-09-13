@@ -60,16 +60,13 @@ pipeline{
             }
         }
 
-        stage('Unit Testing'){
+        stage('Unit Testing') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'mongo-creds', 
-                    passwordVariable: 'MONGO_PASSWORD', 
-                    usernameVariable: 'MONGO_USERNAME'
-                )]) {
-                    sh 'npm run test'
+                withCredentials([usernamePassword(credentialsId: 'mongo-creds', passwordVariable: 'MONGO_PASSWORD', usernameVariable: 'MONGO_USERNAME')]) {
+                    sh 'echo "Running tests..."'
+                    sh 'npm run test -- --reporter spec'  // Add spec reporter for debugging
+                    junit allowEmptyResults: true, testResults: 'test-results.xml'
                 }
-                junit allowEmptyResults: true, testResults: 'test-results.xml'
             }
         }
     }
