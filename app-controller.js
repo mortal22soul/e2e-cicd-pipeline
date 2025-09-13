@@ -48,7 +48,9 @@ function func() {
       thrownewError("Request failed.");
     })
     .catch(function (error) {
-      alert("Ooops, We have 8 planets.\nSelect a number from 0 - 8");
+      alert(
+        "Ooops, We have 8 planets and 1 dwarf planet.\nSelect a number from 1 - 9"
+      );
       console.log(error);
     })
     .then(function (data) {
