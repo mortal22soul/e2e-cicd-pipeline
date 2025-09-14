@@ -157,14 +157,39 @@ pipeline{
             }
         }
 
-        // stage('Docker Push'){
-        //     steps{
-        //         sh '''
-        //         docker login -u $DOCKERHUB_USR -p $DOCKERHUB_PSW
-        //         docker push $DOCKERHUB_USR/solar-system:$GIT_COMMIT
-        //         '''
-        //     }
-        // }
+        stage('Docker Push'){
+            steps{
+                withDockerRegistry(credentialsId: 'dockerhub-creds', url: "") {
+                    sh 'docker push $DOCKERHUB_USR/solar-system:$GIT_COMMIT'
+                }
+            }
+        }
+
+        stage('Deploy - AWS EC2') {
+            when {
+                branch 'feature/*'
+            }
+            steps {
+                script {
+                    sshagent(['aws-ssh-ec2']) {
+                        sh '''
+                            ssh -o StrictHostKeyChecking=no ec2-user@15.206.75.63"
+                            if sudo docker ps -a | grep -q 'solar-system'; then
+                                echo "Container found. Stopping..."
+                                sudo docker stop "solar-system" && sudo docker rm "solar-system"
+                                echo "Container stopped and removed."
+                            fi
+                            sudo docker run --name solar-system \\
+                                -e MONGO_URI=$MONGO_URI \\
+                                -e MONGO_USERNAME=$MONGO_USERNAME \\
+                                -e MONGO_PASSWORD=$MONGO_PASSWORD \\
+                                -p $PORT:$PORT -d $DOCKERHUB_USR/solar-system:$GIT_COMMIT
+                            "
+                        '''
+                    }
+                }
+            }
+        }
     }
     
     post {
@@ -207,8 +232,8 @@ pipeline{
                 alwaysLinkToLastBuild: true,
                 keepAll: true,
                 reportDir: './',
-                reportFiles: 'trivy-image-MEDIUM-results.html',
-                reportName: 'Trivy Image Medium Vul Report',
+                reportFiles: 'trivy-image-HIGH-results.html',
+                reportName: 'Trivy Image High Vul Report',
                 reportTitles: '',
                 useWrapperFileDirectly: true
             ])
