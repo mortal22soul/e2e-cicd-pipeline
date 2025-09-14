@@ -22,9 +22,7 @@ pipeline{
         MONGO_USERNAME = credentials('mongo-user')
         MONGO_PASSWORD = credentials('mongo-pass')
 
-        SONAR_URL = "http://13.233.254.0:9000"
-        SONAR_TOKEN = credentials('sonar-token')
-        SONAR_PROJECT_KEY = "solar-system"
+        // SONAR_PROJECT_KEY = "solar-system"
         SONAR_SCANNER_HOME = tool name: 'sonar-7-2-0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 
         DOCKERHUB = credentials('dockerhub-creds')
@@ -52,18 +50,19 @@ pipeline{
                     steps{
 
                         sh 'echo "Starting OWASP Dependency Check..."'
-                        // dependencyCheck additionalArguments: '''
-                        // --scan ./
-                        // --format "ALL"
-                        // --out ./
-                        // --prettyPrint "ALL"
-                        // ''', odcInstallation: 'owasp-dep-check-12-1-2'
+                        dependencyCheck additionalArguments: '''
+                        --scan ./
+                        --format "ALL"
+                        --out ./
+                        --prettyPrint "ALL"
+                        --disableYarnAudit
+                        ''', odcInstallation: 'owasp-dep-check-12-1-2'
                         
-                        // dependencyCheckPublisher(
-                        //             failedTotalCritical: 4, 
-                        //             pattern: 'dependency-check-report.xml',
-                        //             stopBuild: true
-                        // )
+                        dependencyCheckPublisher(
+                                    failedTotalCritical: 4, 
+                                    pattern: 'dependency-check-report.xml',
+                                    stopBuild: true
+                        )
                     }   
                 }
             }
@@ -90,7 +89,9 @@ pipeline{
                 //         sh 'npm run coverage'
                 //     }
                 // }
-                catchError(buildResult: 'SUCCESS', message: 'Oops! it will be fixed in future releases', stageResult: 'UNSTABLE') {
+                catchError(buildResult: 'SUCCESS',
+                            message: 'Oops! it will be fixed in future releases', 
+                            stageResult: 'UNSTABLE') {
                         sh 'npm run coverage'
                 }
             }
@@ -98,15 +99,18 @@ pipeline{
 
         stage('SAST using Sonarqube'){
             steps{
-                sh 'echo "Starting SonarQube Analysis..."'
-                // sh '''
-                // $SONAR_SCANNER_HOME/bin/sonar-scanner \
-                //     -Dsonar.host.url=$SONAR_URL \
-                //     -Dsonar.sources=app.js \
-                //     -Dsonar.token=$SONAR_TOKEN \
-                //     -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-                //     -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
-                //     '''
+                timeout(time: 60, unit: 'SECONDS') {
+                    withSonarQubeEnv('sonarqube') {
+                        sh 'echo "Starting SonarQube Analysis..."'
+                        sh '''
+                        $SONAR_SCANNER_HOME/bin/sonar-scanner \
+                            -Dsonar.sources=app.js \
+                            -Dsonar.token=$SONAR_TOKEN \
+                            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+                        '''
+                    }
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
 
