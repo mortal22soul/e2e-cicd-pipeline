@@ -1,4 +1,4 @@
-FROM node:18-alpine3.17
+FROM node:24.8-alpine3.21
 
 WORKDIR /usr/app
 
@@ -12,6 +12,6 @@ ENV MONGO_URI=uriPlaceholder
 ENV MONGO_USERNAME=usernamePlaceholder
 ENV MONGO_PASSWORD=passwordPlaceholder
 
-EXPOSE 3000
+EXPOSE 8000
 
 CMD [ "npm", "start" ]
