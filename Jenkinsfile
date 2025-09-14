@@ -4,6 +4,8 @@ pipeline{
     tools {
         nodejs 'node-24-6-0'
         // So that jenkins uses the npm installed via the plugin
+
+        tool 'sonar-7-2-0'
     }
 
     options {
@@ -20,6 +22,10 @@ pipeline{
         // MONGO_CREDS = credentials('mongo-creds') // wont work as we need username and password separately
         MONGO_USERNAME = credentials('mongo-user')
         MONGO_PASSWORD = credentials('mongo-pass')
+
+        SONAR_URL = "http://13.233.254.0:9000"
+        SONAR_TOKEN = credentials('sonar-token')
+        SONAR_PROJECT_KEY = "solar-system"
     }
     
     stages{
@@ -83,6 +89,19 @@ pipeline{
                 catchError(buildResult: 'SUCCESS', message: 'Oops! it will be fixed in future releases', stageResult: 'UNSTABLE') {
                         sh 'npm run coverage'
                 }
+            }
+        }
+
+        stage('SAST using Sonarqube'){
+            steps{
+                sh '''
+                sonar-scanner \
+                    -Dsonar.host.url=$SONAR_URL \
+                    -Dsonar.sources=app.js \
+                    -Dsonar.token=$SONAR_TOKEN \
+                    -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                    -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+                    '''
             }
         }
 
