@@ -7,7 +7,7 @@ pipeline{
     }
 
     options {
-        timestamps()
+        // timestamps()
         timeout(time: 1, unit: 'HOURS')
 
         disableResume()
@@ -105,7 +105,6 @@ pipeline{
                         sh '''
                         $SONAR_SCANNER_HOME/bin/sonar-scanner \
                             -Dsonar.sources=app.js \
-                            -Dsonar.token=$SONAR_TOKEN \
                             -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
                         '''
                     }
