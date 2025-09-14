@@ -17,6 +17,8 @@ pipeline{
     environment {
         PORT=8000
 
+        EC2_CONNECTION = 'ec2-user@15.206.75.63'
+
         MONGO_URI = "mongodb+srv://octopi.ynkkqtw.mongodb.net/planets"
         // MONGO_CREDS = credentials('mongo-creds') // wont work as we need username and password separately
         MONGO_USERNAME = credentials('mongo-user')
@@ -173,12 +175,13 @@ pipeline{
                 script {
                     sshagent(['aws-ssh-ec2']) {
                         sh '''
-                            ssh -o StrictHostKeyChecking=no ec2-user@15.206.75.63"
+                            ssh -o StrictHostKeyChecking=no $EC2_CONNECTION"
                             if sudo docker ps -a | grep -q 'solar-system'; then
                                 echo "Container found. Stopping..."
                                 sudo docker stop "solar-system" && sudo docker rm "solar-system"
                                 echo "Container stopped and removed."
                             fi
+                            
                             sudo docker run --name solar-system \\
                                 -e MONGO_URI=$MONGO_URI \\
                                 -e MONGO_USERNAME=$MONGO_USERNAME \\
