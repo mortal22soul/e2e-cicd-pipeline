@@ -184,7 +184,8 @@ pipeline{
                                 -e MONGO_URI=$MONGO_URI \\
                                 -e MONGO_USERNAME=$MONGO_USERNAME \\
                                 -e MONGO_PASSWORD=$MONGO_PASSWORD \\
-                                -p 9000:$PORT -d $DOCKERHUB_USR/solar-system:$GIT_COMMIT
+                                -e PORT=$PORT \\
+                                -p $PORT:$PORT -d $DOCKERHUB_USR/solar-system:$GIT_COMMIT
                             "
                         '''
                     }
