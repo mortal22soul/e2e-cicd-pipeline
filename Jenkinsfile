@@ -26,12 +26,13 @@ pipeline{
         SONAR_SCANNER_HOME = tool name: 'sonar-7-2-0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 
         DOCKERHUB = credentials('dockerhub-creds')
+        // here we get username and password both and later we can separate them using $DOCKERHUB_USR and $DOCKERHUB_PSW
     }
     
     stages{
         stage('Install Dependencies'){
             steps{
-                sh 'npm install --no-audit'
+                sh 'npm install --no-audit --package-lock'
             }
         }
 
@@ -104,6 +105,7 @@ pipeline{
                         sh 'echo "Starting SonarQube Analysis..."'
                         sh '''
                         $SONAR_SCANNER_HOME/bin/sonar-scanner \
+                            -Dsonar.projectKey=solar-system \
                             -Dsonar.sources=app.js \
                             -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
                         '''
