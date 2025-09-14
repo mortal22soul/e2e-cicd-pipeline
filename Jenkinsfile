@@ -9,7 +9,7 @@ pipeline{
     options {
         timestamps()
         timeout(time: 1, unit: 'HOURS')
-        
+
         disableResume()
         disableConcurrentBuilds abortPrevious: true
     }
@@ -17,6 +17,9 @@ pipeline{
     environment {
         MONGO_URI = "mongodb+srv://octopi.ynkkqtw.mongodb.net/planets"
         PORT=9000
+        // MONGO_CREDS = credentials('mongo-creds') // wont work as we need username and password separately
+        MONGO_USERNAME = credentials('mongo-user')
+        MONGO_PASSWORD = credentials('mongo-pass')
     }
     
     stages{
@@ -50,11 +53,42 @@ pipeline{
                                     failedTotalCritical: 4, 
                                     pattern: 'dependency-check-report.xml',
                                     stopBuild: true
-                                )
+                        )
+                    }   
+                }
+            }
+        }
 
-                        junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
+        stage('Unit Testing') {
+            options{
+                retry(2)
+            }
+            steps {
+                // withCredentials([usernamePassword(credentialsId: 'mongo-creds', passwordVariable: 'MONGO_PASSWORD', usernameVariable: 'MONGO_USERNAME')]) {
+                //     // sh 'npm run test -- --reporter spec'  // Add spec reporter for debugging
+                    
+                //     sh 'npm run test'
+                // }
+                sh 'npm run test'
+            }
+        }
 
-                        publishHTML([
+        stage('Code Coverage') {
+            steps {
+                // withCredentials([usernamePassword(credentialsId: 'mongo-creds', passwordVariable: 'MONGO_PASSWORD', usernameVariable: 'MONGO_USERNAME')]) {
+                //     catchError(buildResult: 'SUCCESS', message: 'Oops! it will be fixed in future releases', stageResult: 'UNSTABLE') {
+                //         sh 'npm run coverage'
+                //     }
+                // }
+                catchError(buildResult: 'SUCCESS', message: 'Oops! it will be fixed in future releases', stageResult: 'UNSTABLE') {
+                        sh 'npm run coverage'
+                }
+            }
+        }
+
+        post {
+            always {
+                publishHTML([
                             allowMissing: true,
                             alwaysLinkToLastBuild: true,
                             keepAll: true,
@@ -64,30 +98,18 @@ pipeline{
                             reportTitles: '',
                             useWrapperFileDirectly: true
                         ])
-                    }   
-                }
-            }
-        }
-
-        stage('Unit Testing') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'mongo-creds', passwordVariable: 'MONGO_PASSWORD', usernameVariable: 'MONGO_USERNAME')]) {
-                    // sh 'npm run test -- --reporter spec'  // Add spec reporter for debugging
-                    
-                    sh 'npm run test'
-                    junit allowEmptyResults: true, testResults: 'test-results.xml'
-                }
-            }
-        }
-
-        stage('Code Coverage') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'mongo-creds', passwordVariable: 'MONGO_PASSWORD', usernameVariable: 'MONGO_USERNAME')]) {
-                    catchError(buildResult: 'SUCCESS', message: 'Oops! it will be fixed in future releases', stageResult: 'UNSTABLE') {
-                        sh 'npm run coverage'
-                    }
-                }
-                publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Code Coverage HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                publishHTML([
+                            allowMissing: true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true, 
+                            reportDir: 'coverage/lcov-report', 
+                            reportFiles: 'index.html', 
+                            reportName: 'Code Coverage HTML Report', 
+                            reportTitles: '', 
+                            useWrapperFileDirectly: true
+                    ])
+                junit allowEmptyResults: true, testResults: 'test-results.xml'
+                junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
             }
         }
     }
