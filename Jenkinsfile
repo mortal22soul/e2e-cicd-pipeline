@@ -5,7 +5,7 @@ pipeline{
         nodejs 'node-24-6-0'
         // So that jenkins uses the npm installed via the plugin
 
-        tool 'sonar-7-2-0'
+        sonar 'sonar-7-2-0'
     }
 
     options {
