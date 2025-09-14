@@ -26,6 +26,8 @@ pipeline{
         SONAR_TOKEN = credentials('sonar-token')
         SONAR_PROJECT_KEY = "solar-system"
         SONAR_SCANNER_HOME = tool name: 'sonar-7-2-0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+
+        DOCKERHUB = credentials('dockerhub-creds')
     }
     
     stages{
