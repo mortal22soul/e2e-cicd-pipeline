@@ -104,31 +104,32 @@ pipeline{
             }
         }
 
-        post {
-            always {
-                publishHTML([
-                            allowMissing: true,
-                            alwaysLinkToLastBuild: true,
-                            keepAll: true,
-                            reportDir: '.',
-                            reportFiles: 'dependency-check-jenkins.html',
-                            reportName: 'Dependency Check HTML',
-                            reportTitles: '',
-                            useWrapperFileDirectly: true
-                        ])
-                publishHTML([
-                            allowMissing: true,
-                            alwaysLinkToLastBuild: true,
-                            keepAll: true, 
-                            reportDir: 'coverage/lcov-report', 
-                            reportFiles: 'index.html', 
-                            reportName: 'Code Coverage HTML Report', 
-                            reportTitles: '', 
-                            useWrapperFileDirectly: true
+    }
+    
+    post {
+        always {
+            publishHTML([
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: '.',
+                        reportFiles: 'dependency-check-jenkins.html',
+                        reportName: 'Dependency Check HTML',
+                        reportTitles: '',
+                        useWrapperFileDirectly: true
                     ])
-                junit allowEmptyResults: true, testResults: 'test-results.xml'
-                junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
-            }
+            publishHTML([
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true, 
+                        reportDir: 'coverage/lcov-report', 
+                        reportFiles: 'index.html', 
+                        reportName: 'Code Coverage HTML Report', 
+                        reportTitles: '', 
+                        useWrapperFileDirectly: true
+                ])
+            junit allowEmptyResults: true, testResults: 'test-results.xml'
+            junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
         }
     }
 }
