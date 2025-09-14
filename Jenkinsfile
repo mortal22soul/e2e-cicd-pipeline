@@ -4,8 +4,6 @@ pipeline{
     tools {
         nodejs 'node-24-6-0'
         // So that jenkins uses the npm installed via the plugin
-
-        hudson.plugins.sonar.SonarRunnerInstallation 'sonar-7-2-0'
     }
 
     options {
@@ -26,6 +24,7 @@ pipeline{
         SONAR_URL = "http://13.233.254.0:9000"
         SONAR_TOKEN = credentials('sonar-token')
         SONAR_PROJECT_KEY = "solar-system"
+        SONAR_SCANNER_HOME = tool name: 'sonar-7-2-0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
     }
     
     stages{
@@ -95,7 +94,7 @@ pipeline{
         stage('SAST using Sonarqube'){
             steps{
                 sh '''
-                sonar-scanner \
+                $SONAR_SCANNER_HOME/bin/sonar-scanner \
                     -Dsonar.host.url=$SONAR_URL \
                     -Dsonar.sources=app.js \
                     -Dsonar.token=$SONAR_TOKEN \
