@@ -9,6 +9,22 @@ chai.use(chaiHttp);
 
 describe("Planets API Suite", () => {
   describe("Fetching Planet Details", () => {
+    it("it should fetch a star named Sun", (done) => {
+      let payload = {
+        id: 0,
+      };
+      chai
+        .request(server)
+        .post("/planet")
+        .send(payload)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.have.property("id").eql(0);
+          res.body.should.have.property("name").eql("Sun");
+          done();
+        });
+    });
+
     it("it should fetch a planet named Mercury", (done) => {
       let payload = {
         id: 1,
@@ -132,22 +148,6 @@ describe("Planets API Suite", () => {
           res.should.have.status(200);
           res.body.should.have.property("id").eql(8);
           res.body.should.have.property("name").eql("Neptune");
-          done();
-        });
-    });
-
-    it("it should fetch a planet named Pluto", (done) => {
-      let payload = {
-        id: 9,
-      };
-      chai
-        .request(server)
-        .post("/planet")
-        .send(payload)
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.have.property("id").eql(9);
-          res.body.should.have.property("name").eql("Pluto");
           done();
         });
     });

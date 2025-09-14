@@ -25,7 +25,6 @@ async function connectToDatabase() {
   }
 }
 
-// Call the connection function
 connectToDatabase();
 
 var Schema = mongoose.Schema;
