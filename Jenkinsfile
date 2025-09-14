@@ -16,7 +16,7 @@ pipeline{
 
     environment {
         MONGO_URI = "mongodb+srv://octopi.ynkkqtw.mongodb.net/planets"
-        PORT=9000
+        PORT=8000
         // MONGO_CREDS = credentials('mongo-creds') // wont work as we need username and password separately
         MONGO_USERNAME = credentials('mongo-user')
         MONGO_PASSWORD = credentials('mongo-pass')
@@ -74,7 +74,7 @@ pipeline{
                     
                 //     sh 'npm run test'
                 // }
-                sh 'npm run test -- --reporter spec'
+                sh 'npm run test'
             }
         }
 
