@@ -192,6 +192,23 @@ pipeline{
                 }
             }
         }
+
+        stage('Integration Testing - AWS EC2') {
+            when {
+                branch 'feature/*'
+            }
+            steps {
+                // Optionally print environment variables to verify branch details
+                sh 'printenv | grep -i branch'
+
+                // Use the AWS Pipeline Steps plugin to set AWS credentials and region
+                withAWS(credentials: 'AWS keys for dev-deploy', region: 'ap-south-1') {
+                    sh '''
+                        bash integration-testing-ec2.sh
+                    '''
+                }
+            }
+        }
     }
     
     post {
