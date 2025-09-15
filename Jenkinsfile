@@ -247,21 +247,23 @@ pipeline{
 
         stage('K8S - Raise PR') {
             steps{
-                curl -X 'POST' \
-                'http://13.233.254.0:3000/api/v1/repos/$GITEA_USER/solar-system-gitops-argocd/pulls' \
-                -H 'accept: application/json' \
-                -H 'Authorization: token $GITEA_TOKEN' \
-                -H 'Content-Type: application/json' \
-                -d '{
-                    "assignee": "$GITEA_USER",
-                    "assignees": [
-                    "$GITEA_USER"
-                    ],
-                    "base": "main",
-                    "body": "Updated docker image in deployment manifest",
-                    "head": "feature-$BUILD_ID",
-                    "title": "Updated Docker Image"
-                }'
+                sh '''
+                    curl -X 'POST' \
+                    'http://13.233.254.0:3000/api/v1/repos/$GITEA_USER/solar-system-gitops-argocd/pulls' \
+                    -H 'accept: application/json' \
+                    -H 'Authorization: token $GITEA_TOKEN' \
+                    -H 'Content-Type: application/json' \
+                    -d '{
+                        "assignee": "$GITEA_USER",
+                        "assignees": [
+                        "$GITEA_USER"
+                        ],
+                        "base": "main",
+                        "body": "Updated docker image in deployment manifest",
+                        "head": "feature-$BUILD_ID",
+                        "title": "Updated Docker Image"
+                    }'
+                '''
             }
         }
     }
