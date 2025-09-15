@@ -25,7 +25,7 @@ pipeline{
         // SONAR_PROJECT_KEY = "solar-system"
         SONAR_SCANNER_HOME = tool name: 'sonar-7-2-0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 
-        GITEA_USER = "mortal22soul"
+        GITEA_USER = "admin"
         GITEA_TOKEN = credentials('a0b327fd-b6af-4d2e-a203-2be525f30e9c') // for pushing to gitops repo
 
         DOCKERHUB = credentials('dockerhub-creds')
