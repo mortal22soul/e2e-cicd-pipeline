@@ -254,9 +254,9 @@ pipeline{
                     -H 'Authorization: token $GITEA_TOKEN' \
                     -H 'Content-Type: application/json' \
                     -d '{
-                        "assignee": \"$GITEA_USER\",
+                        "assignee": $GITEA_USER,
                         "assignees": [
-                            \"$GITEA_USER\"
+                            $GITEA_USER
                         ],
                         "base": "main",
                         "body": "Updated docker image in deployment manifest",
