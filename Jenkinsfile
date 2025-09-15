@@ -25,7 +25,7 @@ pipeline{
         // SONAR_PROJECT_KEY = "solar-system"
         SONAR_SCANNER_HOME = tool name: 'sonar-7-2-0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 
-        GITEA_USER = "admin"
+        GITEA_USER = "mortal22soul"
         GITEA_TOKEN = credentials('a0b327fd-b6af-4d2e-a203-2be525f30e9c') // for pushing to gitops repo
 
         DOCKERHUB = credentials('dockerhub-creds')
@@ -254,9 +254,9 @@ pipeline{
                     -H 'Authorization: token $GITEA_TOKEN' \
                     -H 'Content-Type: application/json' \
                     -d '{
-                        "assignee": "$GITEA_USER",
+                        "assignee": \"$GITEA_USER\",
                         "assignees": [
-                        "$GITEA_USER"
+                            \"$GITEA_USER\"
                         ],
                         "base": "main",
                         "body": "Updated docker image in deployment manifest",
