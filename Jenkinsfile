@@ -25,6 +25,8 @@ pipeline{
         // SONAR_PROJECT_KEY = "solar-system"
         SONAR_SCANNER_HOME = tool name: 'sonar-7-2-0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 
+        GITEA_TOKEN = credentials('a0b327fd-b6af-4d2e-a203-2be525f30e9c') // for pushing to gitops repo
+
         DOCKERHUB = credentials('dockerhub-creds')
         // here we get username and password both and later we can separate them using $DOCKERHUB_USR and $DOCKERHUB_PSW
     }
@@ -178,7 +180,7 @@ pipeline{
                 script {
                     sshagent(['aws-ssh-ec2']) {
                         sh '''
-                            ssh -o StrictHostKeyChecking=no ubuntu@43.204.141.86 "
+                            ssh -o StrictHostKeyChecking=no ubuntu@65.0.87.74 "
                             if sudo docker ps -a | grep -q 'solar-system'; then
                                 echo "Container found. Stopping..."
                                 sudo docker stop "solar-system" && sudo docker rm "solar-system"
@@ -214,10 +216,45 @@ pipeline{
                 }
             }
         }
+
+        stage('K8s Update Image Tag') {
+            when {
+                branch 'PR*' // only if the branch starts with PR
+            }
+            steps {
+                sh 'git clone -b main http://13.233.254.0:3000/mortal22soul/solar-system-gitops-argocd'
+                dir('solar-system-gitops-argocd/kubernetes') {
+                    sh '''
+                        ##### Replace Docker Tag #####
+                        git checkout main
+                        git checkout -b feature-$BUILD_ID
+                        sed -i "s#$DOCKERHUB_USR/solar-system:$GIT_COMMIT#$DOCKERHUB_USR/solar-system:$GIT_COMMIT#g" deployment.yml
+                        cat deployment.yml
+
+
+                        ##### Commit and Push to Feature Branch #####
+                        git config --global user.email "jenkins@dasher.com"
+                        git config --global user.name "Jenkins"
+                        git remote set-url origin http://$GITEA_TOKEN@64.227.187.25:5555/dasher-org/solar-system-gitops-argocd
+                        git add .
+                        git commit -am "Updated docker image"
+                        git push -u origin feature-$BUILD_ID
+                    '''
+                }
+            }
+        }
     }
     
     post {
         always {
+
+            // Clean up the manifest repository to avoid clone conflicts in subsequent runs.
+            script {
+                if (fileExists('solar-system-gitops-argocd')) {
+                    sh 'rm -rf solar-system-gitops-argocd'
+                }
+            }
+
             publishHTML([
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
