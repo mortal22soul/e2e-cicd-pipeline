@@ -105,19 +105,18 @@ pipeline{
 
         stage('SAST using Sonarqube'){
             steps{
-                sh 'Running SonarQube Analysis...'
-                // timeout(time: 60, unit: 'SECONDS') {
-                //     withSonarQubeEnv('sonarqube') {
-                //         sh 'echo "Starting SonarQube Analysis..."'
-                //         sh '''
-                //         $SONAR_SCANNER_HOME/bin/sonar-scanner \
-                //             -Dsonar.projectKey=solar-system \
-                //             -Dsonar.sources=app.js \
-                //             -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
-                //         '''
-                //     }
-                //     waitForQualityGate abortPipeline: true
-                // }
+                timeout(time: 60, unit: 'SECONDS') {
+                    withSonarQubeEnv('sonarqube') {
+                        sh 'echo "Starting SonarQube Analysis..."'
+                        sh '''
+                        $SONAR_SCANNER_HOME/bin/sonar-scanner \
+                            -Dsonar.projectKey=solar-system \
+                            -Dsonar.sources=app.js \
+                            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+                        '''
+                    }
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
 
