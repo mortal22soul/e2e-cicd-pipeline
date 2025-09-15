@@ -233,9 +233,9 @@ pipeline{
 
 
                         ##### Commit and Push to Feature Branch #####
-                        git config --global user.email "jenkins@dasher.com"
-                        git config --global user.name "Jenkins"
-                        git remote set-url origin http://$GITEA_TOKEN@64.227.187.25:5555/dasher-org/solar-system-gitops-argocd
+                        git config --global user.email "metalmoshpit@outlook.com"
+                        git config --global user.name "mortal22soul"
+                        git remote set-url origin http://$GITEA_TOKEN@13.233.254.0:3000/mortal22soul/solar-system-gitops-argocd
                         git add .
                         git commit -am "Updated docker image"
                         git push -u origin feature-$BUILD_ID
