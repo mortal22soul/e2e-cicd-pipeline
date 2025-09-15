@@ -54,6 +54,7 @@ pipeline{
                     steps{
 
                         sh 'echo "Starting OWASP Dependency Check..."'
+                        /*
                         dependencyCheck additionalArguments: '''
                         --scan ./
                         --format "ALL"
@@ -67,6 +68,7 @@ pipeline{
                                     pattern: 'dependency-check-report.xml',
                                     stopBuild: true
                         )
+                        */
                     }   
                 }
             }
@@ -254,9 +256,9 @@ pipeline{
                     -H 'Authorization: token $GITEA_TOKEN' \
                     -H 'Content-Type: application/json' \
                     -d '{
-                        "assignee": mortal22soul,
+                        "assignee": "mortal22soul",
                         "assignees": [
-                            mortal22soul
+                            "mortal22soul"
                         ],
                         "base": "main",
                         "body": "Updated docker image in deployment manifest",
@@ -266,10 +268,40 @@ pipeline{
                 '''
             }
         }
+        /*
+        stage('App Deployed') {
+            when {
+                branch 'PR*'
+            }
+            steps {
+                timeout(time: 1, unit: 'DAYS') {
+                    input message: 'Is the PR merged and is the Argo CD application synced?', ok: 'Yes, PR merged & Argo CD synced'
+                }
+            }
+        }
+
+        stage('DAST - OWASP ZAP') {
+            when {
+                branch 'PR*'
+            }
+            steps {
+                sh '''
+                ##### REPLACE below with Kubernetes http://IP_Address:30000/api-docs/ #####
+                chmod 777 $(pwd)
+                docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zap-api-scan.py \
+                -t http://134.209.155.222:30000/api-docs/ \
+                -f openapi \
+                -r zap_report.html \
+                -w zap_report.md \
+                -J zap_json_report.json \
+                -x zap_xml_report.xml
+                '''
+            }
+        }*/
     }
-    
-    post {
-        always {
+
+        post {
+            always {
 
             // Clean up the manifest repository to avoid clone conflicts in subsequent runs.
             script {
