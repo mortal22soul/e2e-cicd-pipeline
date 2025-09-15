@@ -26,7 +26,7 @@ pipeline{
         SONAR_SCANNER_HOME = tool name: 'sonar-7-2-0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 
         GITEA_USER = "mortal22soul"
-        GITEA_TOKEN = credentials('a0b327fd-b6af-4d2e-a203-2be525f30e9c') // for pushing to gitops repo
+        GITEA_TOKEN = credentials('7549d7df9ff403021eade699584ecff1ebdb9285') // for pushing to gitops repo
 
         DOCKERHUB = credentials('dockerhub-creds')
         // here we get username and password both and later we can separate them using $DOCKERHUB_USR and $DOCKERHUB_PSW
