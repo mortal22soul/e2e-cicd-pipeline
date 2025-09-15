@@ -249,7 +249,6 @@ pipeline{
 
         stage('K8S - Raise PR') {
             steps{
-                sh 'echo $GITEA_TOKEN'
                 sh """
                     curl -X 'POST' \
                     'http://13.233.254.0:3000/api/v1/repos/$GITEA_USER/solar-system-gitops-argocd/pulls' \
