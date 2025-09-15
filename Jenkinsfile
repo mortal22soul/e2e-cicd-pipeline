@@ -288,7 +288,7 @@ pipeline{
                 sh '''
                 ##### REPLACE below with Kubernetes http://IP_Address:30000/api-docs/ #####
                 chmod 777 $(pwd)
-                docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zap-api-scan.py \
+                docker run -v $(pwd):/zap/wrk/:rw -t zaproxy/zap-stable zap.sh \
                 -t http://43.205.242.235:30000/api-docs/ \
                 -f openapi \
                 -r zap_report.html \
