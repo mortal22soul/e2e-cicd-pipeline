@@ -106,7 +106,7 @@ pipeline{
         stage('SAST using Sonarqube'){
             steps{
                 sh 'Running SonarQube Analysis...'
-               /*
+                /*
                 timeout(time: 60, unit: 'SECONDS') {
                     withSonarQubeEnv('sonarqube') {
                         sh 'echo "Starting SonarQube Analysis..."'
@@ -117,9 +117,9 @@ pipeline{
                             -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
                         '''
                     }
-                    */
-                    // waitForQualityGate abortPipeline: true
+                    waitForQualityGate abortPipeline: true
                 }
+                */
             }
         }
 
