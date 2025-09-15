@@ -25,6 +25,7 @@ pipeline{
         // SONAR_PROJECT_KEY = "solar-system"
         SONAR_SCANNER_HOME = tool name: 'sonar-7-2-0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 
+        GITEA_USER = "mortal22soul"
         GITEA_TOKEN = credentials('a0b327fd-b6af-4d2e-a203-2be525f30e9c') // for pushing to gitops repo
 
         DOCKERHUB = credentials('dockerhub-creds')
@@ -242,6 +243,24 @@ pipeline{
                     '''
                 }
             }
+        }
+
+        stage('K8S - Raise PR') {
+            curl -X 'POST' \
+                'http://13.233.254.0:3000/api/v1/repos/$GITEA_USER/solar-system-gitops-argocd/pulls' \
+                -H 'accept: application/json' \
+                -H 'Authorization: token $GITEA_TOKEN' \
+                -H 'Content-Type: application/json' \
+                -d '{
+                    "assignee": "$GITEA_USER",
+                    "assignees": [
+                    "$GITEA_USER"
+                    ],
+                    "base": "main",
+                    "body": "Updated docker image in deployment manifest",
+                    "head": "feature-$BUILD_ID",
+                    "title": "Updated Docker Image"
+                }'
         }
     }
     
