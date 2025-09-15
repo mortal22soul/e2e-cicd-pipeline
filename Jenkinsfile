@@ -254,7 +254,7 @@ pipeline{
                     curl -X 'POST' \
                     'http://13.233.254.0:3000/api/v1/repos/mortal22soul/solar-system-gitops-argocd/pulls' \
                     -H 'accept: application/json' \
-                    -H 'Authorization: token $GITEA_TOKEN' \
+                    -H 'Authorization: token 7549d7df9ff403021eade699584ecff1ebdb9285' \
                     -H 'Content-Type: application/json' \
                     -d '{
                         "assignee": "mortal22soul",
