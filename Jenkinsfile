@@ -131,7 +131,7 @@ pipeline{
         stage('Image Scan with Trivy'){
             steps{
                 script{
-                    trivyScan.vulnerabilityScan($DOCKERHUB_USR/solar-system:$GIT_COMMIT)
+                    trivyScan.vulnerabilityScan("$DOCKERHUB_USR/solar-system:$GIT_COMMIT")
                 }
             }
             post{
