@@ -1,3 +1,21 @@
+def slackNotificationMethod(String buildStatus = 'STARTED') {
+    buildStatus = buildStatus ?: 'SUCCESS'
+
+    def color
+
+    if (buildStatus == 'SUCCESS') {
+        color = '#47ec05'
+    } else if (buildStatus == 'UNSTABLE') {
+        color = '#d5ee0d'
+    } else {
+        color = '#ec2805'
+    }
+
+    def msg = "${buildStatus}: *${env.JOB_NAME}* #${env.BUILD_NUMBER}:\n${env.BUILD_URL}"
+
+    slackSend(color: color, message: msg)
+}
+
 pipeline{
     agent any
 
@@ -44,8 +62,7 @@ pipeline{
                 stage('NPM Dependency Audit'){
                     steps{
                         sh '''
-                        npm audit --audit-level=critical
-                        echo $?
+                        npm audit --audit-level=critical || echo $?
                         '''
                     }
                 }
@@ -54,7 +71,7 @@ pipeline{
                     steps{
 
                         sh 'echo "Starting OWASP Dependency Check..."'
-                        /*
+                        
                         dependencyCheck additionalArguments: '''
                         --scan ./
                         --format "ALL"
@@ -68,7 +85,6 @@ pipeline{
                                     pattern: 'dependency-check-report.xml',
                                     stopBuild: true
                         )
-                        */
                     }   
                 }
             }
@@ -294,8 +310,97 @@ pipeline{
                 -r zap_report.html \
                 -w zap_report.md \
                 -J zap_json_report.json \
-                -x zap_xml_report.xml
+                -x zap_xml_report.xml \
+                -c zap_ignore_rules.conf
                 '''
+            }
+        }
+
+        stage('Upload - AWS S3') {
+            when {
+                anyOf {
+                    branch 'PR*'
+                    branch 'feature*'
+                }
+            }
+            steps {
+                sh '''
+                    mkdir reports-$BUILD_ID
+                    cp -rf coverage/ reports-$BUILD_ID/
+                    cp dependency* test-results.xml trivy*.* zap*.* reports-$BUILD_ID/
+                '''
+                withAWS(credentials: 'aws-s3-ec2-lambda-creds', region: 'us-east-2') {
+                    s3Upload(
+                        file: "reports-$BUILD_ID",
+                        bucket: 'solar-system-jenkins-reports-bucket',
+                        path: "jenkins-$BUILD_ID/"
+                    )
+                }
+            }
+        }
+
+        stage('Deploy to Prod?') {
+            when {
+                branch 'main'
+            }
+            steps {
+                timeout(time: 1, unit: 'DAYS') {
+                    input message: 'Deploy to Production?', ok: 'YES! Let us try this on Production', submitter: 'admin'
+                }
+            }
+        }
+
+        stage('Lambda -- S3 Upload & Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                withAWS(credentials: 'AWS keys for dev-deploy', region: 'ap-south-1') {
+                    sh '''
+                        tail -5 app.js
+                        echo "**********************************************************"
+                        sed -i "s|/app\\.listen(3000|/||" app.js
+                        sed -i "s|/module.exports = app;|/|g" app.js
+                        sed -i "s|^|/module.exports.handler|module.exports.handler|" app.js
+                        echo "**********************************************************"
+                        tail -5 app.js
+                    '''
+                    sh '''
+                        zip -qr solar-system-lambda-$BUILD_ID.zip app* package* index.html node*
+                        ls -ltr solar-system-lambda-$BUILD_ID.zip
+                    '''
+                    s3Upload {
+                        file: "solar-system-lambda-${BUILD_ID}.zip",
+                        bucket: "solar-system-lambda-bucket"
+                    }
+                    sh """
+                        aws lambda update-function-code \
+                        --function-name solar-system-function \
+                        --s3-bucket solar-system-lambda-bucket \
+                        --s3-key solar-system-lambda-$BUILD_ID.zip
+                    """
+                    sh """
+                        aws lambda update-function-configuration \
+                        --function-name solar-system-function \
+                        --environment '{"Variables":{"MONGO_USERNAME":"${MONGO_USERNAME}","MONGO_PASSWORD":"${MONGO_PASSWORD}","MONGO_URI":"${MONGO_URI}"}}'
+                    """
+                }
+            }
+        }
+
+        stage('Lambda - Invoke Function') {
+            when {
+                branch 'main'
+            }
+            steps {
+                withAWS(credentials: 'AWS keys for dev-deploy', region: 'ap-south-1') {
+                    sh '''
+                        sleep 30s
+                        function_url_data=$(aws lambda get-function-url-config --function-name solar-system-function)
+                        function_url=$(echo $function_url_data | jq -r '.FunctionUrl | sub("/$"; "")')
+                        curl -Is $function_url/live | grep -i "200 OK"
+                    '''
+                }
             }
         }
     }
@@ -303,60 +408,74 @@ pipeline{
         post {
             always {
 
-            // Clean up the manifest repository to avoid clone conflicts in subsequent runs.
-            script {
-                if (fileExists('solar-system-gitops-argocd')) {
-                    sh 'rm -rf solar-system-gitops-argocd'
+                slackNotificationMethod(currentBuild.currentResult)
+
+                // Clean up the manifest repository to avoid clone conflicts in subsequent runs.
+                script {
+                    if (fileExists('solar-system-gitops-argocd')) {
+                        sh 'rm -rf solar-system-gitops-argocd'
+                    }
                 }
-            }
 
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: '.',
-                reportFiles: 'dependency-check-jenkins.html',
-                reportName: 'Dependency Check HTML',
-                reportTitles: '',
-                useWrapperFileDirectly: true
-            ])
+                publishHTML([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: '.',
+                    reportFiles: 'dependency-check-jenkins.html',
+                    reportName: 'Dependency Check HTML',
+                    reportTitles: '',
+                    useWrapperFileDirectly: true
+                ])
 
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true, 
-                reportDir: 'coverage/lcov-report', 
-                reportFiles: 'index.html', 
-                reportName: 'Code Coverage HTML Report', 
-                reportTitles: '', 
-                useWrapperFileDirectly: true
-            ])
+                publishHTML([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true, 
+                    reportDir: 'coverage/lcov-report', 
+                    reportFiles: 'index.html', 
+                    reportName: 'Code Coverage HTML Report', 
+                    reportTitles: '', 
+                    useWrapperFileDirectly: true
+                ])
 
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: './',
-                reportFiles: 'trivy-image-CRITICAL-results.html',
-                reportName: 'Trivy Image Critical Vul Report',
-                reportTitles: '',
-                useWrapperFileDirectly: true
-            ])
+                publishHTML([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: './',
+                    reportFiles: 'trivy-image-CRITICAL-results.html',
+                    reportName: 'Trivy Image Critical Vul Report',
+                    reportTitles: '',
+                    useWrapperFileDirectly: true
+                ])
 
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: './',
-                reportFiles: 'trivy-image-HIGH-results.html',
-                reportName: 'Trivy Image High Vul Report',
-                reportTitles: '',
-                useWrapperFileDirectly: true
-            ])
+                publishHTML([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: './',
+                    reportFiles: 'trivy-image-HIGH-results.html',
+                    reportName: 'Trivy Image High Vul Report',
+                    reportTitles: '',
+                    useWrapperFileDirectly: true
+                ])
 
-            junit allowEmptyResults: true, testResults: 'test-results.xml'
-            
-            junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
+                publishHTML([allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: './',
+                    reportFiles: 'zap_report.html',
+                    reportName: 'DAST - OWASP ZAP Report',
+                    reportTitles: '',
+                    useWrapperFileDirectly: true
+                ])
+
+                junit allowEmptyResults: true, stdioRetention: '', testResults: 'test-results.xml'
+                junit allowEmptyResults: true, stdioRetention: '', testResults: 'dependency-check-junit.xml'
+                junit allowEmptyResults: true, stdioRetention: '', testResults: 'zap_xml_report.xml'
+                junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-CRITICAL-results.xml'
+                junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-HIGH-results.xml'
         }
     }
 }

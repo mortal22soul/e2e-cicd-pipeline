@@ -4,9 +4,9 @@ metadata:
   labels:
     app: solar-system
   name: solar-system
-  namespace: ${NAMESPACE}
+  namespace: solar-system
 spec:
-  replicas: ${REPLICAS}
+  replicas: 2
   selector:
     matchLabels:
       app: solar-system
@@ -16,12 +16,13 @@ spec:
       labels:
         app: solar-system
     spec:
+      dnsPolicy: Default # so that the pod can connect to mongodb atlas
       containers:
-      - image: ${K8S_IMAGE}
+      - image: aryanmehesare/solar-system:45bba5813510ac8cd22453e75584e07cfe10d2e4
         imagePullPolicy: Always
         name: solar-system
         ports:
-        - containerPort: 3000
+        - containerPort: 8000
           name: http
           protocol: TCP
         envFrom:
