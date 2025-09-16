@@ -369,10 +369,10 @@ pipeline{
                         zip -qr solar-system-lambda-$BUILD_ID.zip app* package* index.html node*
                         ls -ltr solar-system-lambda-$BUILD_ID.zip
                     '''
-                    s3Upload {
+                    s3Upload (
                         file: "solar-system-lambda-${BUILD_ID}.zip",
                         bucket: "solar-system-lambda-bucket"
-                    }
+                    )
                     sh """
                         aws lambda update-function-code \
                         --function-name solar-system-function \
