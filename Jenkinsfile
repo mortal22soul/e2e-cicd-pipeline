@@ -1,4 +1,4 @@
-@Library('jenkins-shared-libs') _
+@Library('jenkins-shared-libs@feature/trivyScan') _
 
 pipeline{
     agent any
@@ -130,39 +130,15 @@ pipeline{
 
         stage('Image Scan with Trivy'){
             steps{
-                sh '''
-                trivy image $DOCKERHUB_USR/solar-system:$GIT_COMMIT \
-                    --severity LOW,MEDIUM,HIGH \
-                    --exit-code 0 \
-                    --quiet \
-                    --format json -o trivy-image-HIGH-results.json
-                
-                trivy image $DOCKERHUB_USR/solar-system:$GIT_COMMIT \
-                    --severity CRITICAL \
-                    --exit-code 1 \
-                    --quiet \
-                    --format json -o trivy-image-CRITICAL-results.json
-                '''
+                script{
+                    trivyScan.vulnerabilityScan($DOCKERHUB_USR/solar-system:$GIT_COMMIT)
+                }
             }
             post{
                 always{
-                    sh '''
-                    trivy convert \
-                    --format template --template "@/usr/local/share/trivy/templates/html.tpl" \
-                    --output trivy-image-HIGH-results.html trivy-image-HIGH-results.json
-                    
-                    trivy convert \
-                    --format template --template "@/usr/local/share/trivy/templates/html.tpl" \
-                    --output trivy-image-CRITICAL-results.html trivy-image-CRITICAL-results.json
-                    
-                    trivy convert \
-                    --format template --template "@/usr/local/share/trivy/templates/junit.tpl" \
-                    --output trivy-image-HIGH-results.xml trivy-image-HIGH-results.json
-
-                    trivy convert \
-                    --format template --template "@/usr/local/share/trivy/templates/junit.tpl" \
-                    --output trivy-image-CRITICAL-results.xml trivy-image-CRITICAL-results.json
-                    '''
+                    script{
+                        trivyScan.reportsConverter()
+                    }
                 }
             }
         }
