@@ -147,10 +147,10 @@ pipeline{
             steps{
                 script{
                     trivyScanScript.vulnerabilityScan(
-                    imageName: "$DOCKERHUB_USR/solar-system:$GIT_COMMIT",
-                    severity: 'CRITICAL',
-                    exitCode: 1
-                )
+                        imageName: "$DOCKERHUB_USR/solar-system:$GIT_COMMIT",
+                        severity: 'CRITICAL',
+                        exitCode: 1
+                    )
                 }
             }
         }
