@@ -128,7 +128,7 @@ pipeline{
             }
         }
 
-        stage('Image Scan with Trivy'){
+        stage('Image Scan using Trivy'){
             steps{
                 script{
                     trivyScan.vulnerabilityScan("$DOCKERHUB_USR/solar-system:$GIT_COMMIT")
@@ -139,6 +139,18 @@ pipeline{
                     script{
                         trivyScan.reportsConverter()
                     }
+                }
+            }
+        }
+
+        stage('Scan critical vulnerabilities using Trivy'){
+            steps{
+                script{
+                    trivyScanScript.vulnerabilityScan(
+                    imageName: "$DOCKERHUB_USR/solar-system:$GIT_COMMIT",
+                    severity: 'CRITICAL',
+                    exitCode: 1
+                )
                 }
             }
         }
@@ -367,7 +379,6 @@ pipeline{
 
         post {
             always {
-
                 slackNotification(currentBuild.currentResult)
 
                 // Clean up the manifest repository to avoid clone conflicts in subsequent runs.
@@ -434,8 +445,8 @@ pipeline{
                 // junit allowEmptyResults: true, stdioRetention: '', testResults: 'test-results.xml'
                 // junit allowEmptyResults: true, stdioRetention: '', testResults: 'dependency-check-junit.xml'
                 // junit allowEmptyResults: true, stdioRetention: '', testResults: 'zap_xml_report.xml'
-                junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-CRITICAL-results.xml'
                 junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-HIGH-results.xml'
+                junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-CRITICAL-results.xml'
         }
     }
 }
