@@ -1,56 +1,111 @@
-# Solar System NodeJS Application
+## Solar System Explorer
 
-A simple HTML+MongoDB+NodeJS project to display Solar System and it's planets.
+An interactive web application that displays the Solar System and its planets, built with Node.js and MongoDB.
 
----
+## Features
 
-## Requirements
+- RESTful API for planet data
+- Comprehensive test coverage
 
-For development, you will only need Node.js and NPM installed in your environement.
+## Prerequisites
 
-### Node
+Before running this application, ensure you have:
 
-- #### Node installation on Windows
+- **Node.js**
+- **MongoDB**
 
-  Just go on [official Node.js website](https://nodejs.org/) and download the installer.
-  Also, be sure to have `git` available in your PATH, `npm` might need it (You can find git [here](https://git-scm.com/)).
+## Getting Started
 
-- #### Node installation on Ubuntu
+### 1. Clone the Repository
 
-  You can install nodejs and npm easily with apt install, just run the following commands.
+```bash
+git clone https://github.com/mortal22soul/e2e-cicd-pipeline
+cd solar-system
+```
 
-      $ sudo apt install nodejs
-      $ sudo apt install npm
+### 2. Install Dependencies
 
-- #### Other Operating Systems
-  You can find more information about the installation on the [official Node.js website](https://nodejs.org/) and the [official NPM website](https://npmjs.org/).
+```bash
+npm install
+```
 
-If the installation was successful, you should be able to run the following command.
+### 3. Environment Setup
 
-    $ node --version
-    v8.11.3
+Copy the example environment file and configure your MongoDB Atlas settings:
 
-    $ npm --version
-    6.1.0
+```bash
+cp .env.example .env
+```
 
----
+Edit `.env` with your MongoDB Atlas credentials:
 
-## Install Dependencies from `package.json`
+```env
+MONGO_URI=mongodb+srv://your-cluster.mongodb.net/solar-system
+MONGO_USERNAME=your-username
+MONGO_PASSWORD=your-password
+PORT=8000
+```
 
-    $ npm install
+Make sure that the network access is allowed to the DB.
 
-## Run Unit Testing
+> Set it to 0.0.0.0/0 to allow all hosts during development.
 
-    $ npm test
+Create a collection named planets.
 
-## Run Code Coverage
+Seed the database with tha present in `data.json`.
 
-    $ npm run coverage
+### 4. Run the Application
 
-## Run Application
+```bash
+npm run start
+```
 
-    $ npm start
+The application will be available at: **http://localhost:8000**
 
-## Access Application on Browser
+## Development
 
-    http://localhost:8000/
+### Running Tests
+
+Execute the test suite:
+
+```bash
+npm run test
+```
+
+### Code Coverage
+
+Generate and view code coverage reports:
+
+```bash
+npm run coverage
+```
+
+Coverage reports are generated in the `coverage/` directory.
+
+### API Documentation
+
+The application provides a RESTful API. View the OpenAPI specification in `oas.json` for detailed endpoint documentation.
+
+## Deployment
+
+### Docker
+
+Build and run using Docker:
+
+```bash
+docker build -t solar-system .
+docker run -p 8000:8000 solar-system
+```
+
+## Project Structure
+
+```
+├── app.js             # Main application entry point
+├── app-controller.js  # Application controllers
+├── data.json          # Planet data
+├── index.html         # Frontend interface
+├── images/            # Planet and system images
+├── kubernetes/        # Kubernetes deployment files
+├── coverage/          # Test coverage reports
+└── test/              # Test files
+```
