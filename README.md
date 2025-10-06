@@ -1,32 +1,111 @@
-# Solar System Application
+## Solar System Explorer
 
-A simple MongoDB+JS project to display Solar System and it's planets.
+An interactive web application that displays the Solar System and its planets, built with Node.js and MongoDB.
 
----
+## Features
 
-## Requirements
+- RESTful API for planet data
+- Comprehensive test coverage
 
-- Node.js
-- MongoDB
+## Prerequisites
 
----
+Before running this application, ensure you have:
 
-## Install Dependencies from `package.json`
+- **Node.js**
+- **MongoDB**
 
-    $ npm install
+## Getting Started
 
-## Run Unit Testing
+### 1. Clone the Repository
 
-    $ npm run test
+```bash
+git clone https://github.com/mortal22soul/e2e-cicd-pipeline
+cd solar-system
+```
 
-## Run Code Coverage
+### 2. Install Dependencies
 
-    $ npm run coverage
+```bash
+npm install
+```
 
-## Run Application
+### 3. Environment Setup
 
-    $ npm run start
+Copy the example environment file and configure your MongoDB Atlas settings:
 
-## Access Application
+```bash
+cp .env.example .env
+```
 
-    http://localhost:8000/
+Edit `.env` with your MongoDB Atlas credentials:
+
+```env
+MONGO_URI=mongodb+srv://your-cluster.mongodb.net/solar-system
+MONGO_USERNAME=your-username
+MONGO_PASSWORD=your-password
+PORT=8000
+```
+
+Make sure that the network access is allowed to the DB.
+
+> Set it to 0.0.0.0/0 to allow all hosts during development.
+
+Create a collection named planets.
+
+Seed the database with tha present in `data.json`.
+
+### 4. Run the Application
+
+```bash
+npm run start
+```
+
+The application will be available at: **http://localhost:8000**
+
+## Development
+
+### Running Tests
+
+Execute the test suite:
+
+```bash
+npm run test
+```
+
+### Code Coverage
+
+Generate and view code coverage reports:
+
+```bash
+npm run coverage
+```
+
+Coverage reports are generated in the `coverage/` directory.
+
+### API Documentation
+
+The application provides a RESTful API. View the OpenAPI specification in `oas.json` for detailed endpoint documentation.
+
+## Deployment
+
+### Docker
+
+Build and run using Docker:
+
+```bash
+docker build -t solar-system .
+docker run -p 8000:8000 solar-system
+```
+
+## Project Structure
+
+```
+├── app.js             # Main application entry point
+├── app-controller.js  # Application controllers
+├── data.json          # Planet data
+├── index.html         # Frontend interface
+├── images/            # Planet and system images
+├── kubernetes/        # Kubernetes deployment files
+├── coverage/          # Test coverage reports
+└── test/              # Test files
+```
