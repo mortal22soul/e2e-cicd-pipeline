@@ -377,76 +377,76 @@ pipeline{
         // }
     }
 
-        post {
-            always {
-                slackNotification(currentBuild.currentResult)
+    post {
+        always {
+            slackNotification(currentBuild.currentResult)
 
-                // Clean up the manifest repository to avoid clone conflicts in subsequent runs.
-                // script {
-                //     if (fileExists('solar-system-gitops-argocd')) {
-                //         sh 'rm -rf solar-system-gitops-argocd'
-                //     }
-                // }
+            // Clean up the manifest repository to avoid clone conflicts in subsequent runs.
+            // script {
+            //     if (fileExists('solar-system-gitops-argocd')) {
+            //         sh 'rm -rf solar-system-gitops-argocd'
+            //     }
+            // }
 
-                // publishHTML([
-                //     allowMissing: true,
-                //     alwaysLinkToLastBuild: true,
-                //     keepAll: true,
-                //     reportDir: '.',
-                //     reportFiles: 'dependency-check-jenkins.html',
-                //     reportName: 'Dependency Check HTML',
-                //     reportTitles: '',
-                //     useWrapperFileDirectly: true
-                // ])
+            // publishHTML([
+            //     allowMissing: true,
+            //     alwaysLinkToLastBuild: true,
+            //     keepAll: true,
+            //     reportDir: '.',
+            //     reportFiles: 'dependency-check-jenkins.html',
+            //     reportName: 'Dependency Check HTML',
+            //     reportTitles: '',
+            //     useWrapperFileDirectly: true
+            // ])
 
-                // publishHTML([
-                //     allowMissing: true,
-                //     alwaysLinkToLastBuild: true,
-                //     keepAll: true, 
-                //     reportDir: 'coverage/lcov-report', 
-                //     reportFiles: 'index.html', 
-                //     reportName: 'Code Coverage HTML Report', 
-                //     reportTitles: '', 
-                //     useWrapperFileDirectly: true
-                // ])
+            // publishHTML([
+            //     allowMissing: true,
+            //     alwaysLinkToLastBuild: true,
+            //     keepAll: true, 
+            //     reportDir: 'coverage/lcov-report', 
+            //     reportFiles: 'index.html', 
+            //     reportName: 'Code Coverage HTML Report', 
+            //     reportTitles: '', 
+            //     useWrapperFileDirectly: true
+            // ])
 
-                // publishHTML([
-                //     allowMissing: true,
-                //     alwaysLinkToLastBuild: true,
-                //     keepAll: true,
-                //     reportDir: './',
-                //     reportFiles: 'trivy-image-CRITICAL-results.html',
-                //     reportName: 'Trivy Image Critical Vul Report',
-                //     reportTitles: '',
-                //     useWrapperFileDirectly: true
-                // ])
+            // publishHTML([
+            //     allowMissing: true,
+            //     alwaysLinkToLastBuild: true,
+            //     keepAll: true,
+            //     reportDir: './',
+            //     reportFiles: 'trivy-image-CRITICAL-results.html',
+            //     reportName: 'Trivy Image Critical Vul Report',
+            //     reportTitles: '',
+            //     useWrapperFileDirectly: true
+            // ])
 
-                // publishHTML([
-                //     allowMissing: true,
-                //     alwaysLinkToLastBuild: true,
-                //     keepAll: true,
-                //     reportDir: './',
-                //     reportFiles: 'trivy-image-HIGH-results.html',
-                //     reportName: 'Trivy Image High Vul Report',
-                //     reportTitles: '',
-                //     useWrapperFileDirectly: true
-                // ])
+            // publishHTML([
+            //     allowMissing: true,
+            //     alwaysLinkToLastBuild: true,
+            //     keepAll: true,
+            //     reportDir: './',
+            //     reportFiles: 'trivy-image-HIGH-results.html',
+            //     reportName: 'Trivy Image High Vul Report',
+            //     reportTitles: '',
+            //     useWrapperFileDirectly: true
+            // ])
 
-                // publishHTML([allowMissing: true,
-                //     alwaysLinkToLastBuild: true,
-                //     keepAll: true,
-                //     reportDir: './',
-                //     reportFiles: 'zap_report.html',
-                //     reportName: 'DAST - OWASP ZAP Report',
-                //     reportTitles: '',
-                //     useWrapperFileDirectly: true
-                // ])
+            // publishHTML([allowMissing: true,
+            //     alwaysLinkToLastBuild: true,
+            //     keepAll: true,
+            //     reportDir: './',
+            //     reportFiles: 'zap_report.html',
+            //     reportName: 'DAST - OWASP ZAP Report',
+            //     reportTitles: '',
+            //     useWrapperFileDirectly: true
+            // ])
 
-                // junit allowEmptyResults: true, stdioRetention: '', testResults: 'test-results.xml'
-                // junit allowEmptyResults: true, stdioRetention: '', testResults: 'dependency-check-junit.xml'
-                // junit allowEmptyResults: true, stdioRetention: '', testResults: 'zap_xml_report.xml'
-                junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-HIGH-results.xml'
-                junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-CRITICAL-results.xml'
+            // junit allowEmptyResults: true, stdioRetention: '', testResults: 'test-results.xml'
+            // junit allowEmptyResults: true, stdioRetention: '', testResults: 'dependency-check-junit.xml'
+            // junit allowEmptyResults: true, stdioRetention: '', testResults: 'zap_xml_report.xml'
+            junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-HIGH-results.xml'
+            junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-CRITICAL-results.xml'
         }
     }
 }
